@@ -28,6 +28,7 @@ public class GenericSentenceFactory {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public INmeaSentence createSentence(java.util.Date timestamp, String sentenceType) 
 			throws SentenceCreationException {
 		if (sentenceClasses.containsKey(sentenceType)) {

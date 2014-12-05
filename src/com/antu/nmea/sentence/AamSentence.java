@@ -29,7 +29,7 @@ public class AamSentence extends ParametricSentence {
 	@SentenceField(order = 2, fieldType="boolean")
 	public boolean perpendicularPassedAtWaypoint = false;
 	
-	@SentenceField(order = 3, fieldType="double", decimalPlaces=2)
+	@SentenceField(order = 3, fieldType="double", precision=2)
 	public double arrivalCircleRadius = 0.0;
 	
 	@SentenceField(order = 4, fieldType="char")

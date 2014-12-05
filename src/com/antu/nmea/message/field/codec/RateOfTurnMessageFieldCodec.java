@@ -3,10 +3,10 @@ package com.antu.nmea.message.field.codec;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.annotation.FieldSetting;
 import com.antu.nmea.sentence.ais.AbstractAisSentence;
 
-public class RateOfTurnMessageFieldCodec implements IMessageFieldCodec {
+public class RateOfTurnMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	public RateOfTurnMessageFieldCodec() {
 	}
@@ -17,11 +17,9 @@ public class RateOfTurnMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, Object obj,
-			Field field) {
-		
-		MessageField annotation = field.getAnnotation(MessageField.class);
-		Byte b = MessageFieldCodecHelper.parseByte(bits, startIndex, annotation.requiredBits(), true);
+	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+			Field field, FieldSetting setting) {
+		Byte b = MessageFieldCodecHelper.parseByte(bits, startIndex, setting.getFieldWidth(), true);
 		
 		if (b == null)
 			return false;
@@ -40,8 +38,8 @@ public class RateOfTurnMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean encode(List<Byte> bits, Object obj, Field field,
-			MessageField annotation) {
+	protected boolean doEncode(List<Byte> bits, Object obj, Field field,
+			FieldSetting setting) {
 		
 		try {
 			Double val = field.getDouble(obj);
@@ -59,7 +57,7 @@ public class RateOfTurnMessageFieldCodec implements IMessageFieldCodec {
 					if (negative) b = (byte) -b;
 				}
 			}
-			if (!MessageFieldCodecHelper.byteToBits(bits, b, annotation.requiredBits(), true)) {
+			if (!MessageFieldCodecHelper.byteToBits(bits, b, setting.getFieldWidth(), true)) {
 				return false;
 			}
 			return true;

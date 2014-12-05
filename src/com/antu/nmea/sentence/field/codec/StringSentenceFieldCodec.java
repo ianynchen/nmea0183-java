@@ -2,24 +2,9 @@ package com.antu.nmea.sentence.field.codec;
 
 import java.lang.reflect.Field;
 
-import com.antu.nmea.annotation.SentenceField;
+import com.antu.nmea.annotation.FieldSetting;
 
 public class StringSentenceFieldCodec extends AbstractSentenceFieldCodec {
-
-	@Override
-	public boolean encode(StringBuilder builder, Object sentenceObject, 
-			SentenceField annotation, Field field) {
-
-		try {
-			Object obj = field.get(sentenceObject);
-			builder.append(',').append(obj.toString());
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			
-			return false;
-		}
-
-		return true;
-	}
 
 	@Override
 	public String fieldCodecType() {
@@ -27,11 +12,24 @@ public class StringSentenceFieldCodec extends AbstractSentenceFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(String[] segments, Object sentenceObject, Field field,
-			int startIndex) {
+	public int requiredSegments() {
+		return 1;
+	}
+
+	@Override
+	protected boolean doDecode(String[] segments, Object obj, Field field,
+			FieldSetting setting, int startIndex) {
 
 		try {
-			field.set(sentenceObject, segments[startIndex]);
+			if (this.isNeededSegmentsEmpty(segments, startIndex)) {
+				if (setting.isRequired())
+					return false;
+				else {
+					field.set(obj, setting.getDefaultValue());
+					return true;
+				}
+			}
+			field.set(obj, segments[startIndex]);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			return false;
 		}
@@ -39,8 +37,27 @@ public class StringSentenceFieldCodec extends AbstractSentenceFieldCodec {
 	}
 
 	@Override
-	public int requiredSegments() {
-		return 1;
+	protected boolean doEncode(StringBuilder builder, Object obj, Field field,
+			FieldSetting setting) {
+
+		try {
+			Object value = field.get(obj);
+			
+			if (value == null) {
+				if (setting.isRequired())
+					return false;
+				else {
+					builder.append(",");
+					return true;
+				}
+			}
+			builder.append(',').append(value.toString());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			
+			return false;
+		}
+
+		return true;
 	}
 
 }

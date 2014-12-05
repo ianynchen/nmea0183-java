@@ -24,7 +24,7 @@ public class AbmSentenceCodec extends EncapsulationSentenceCodec{
 			InstantiationException, IllegalAccessException {
 		
 		if (sentence instanceof AbmSentence) {
-			return factory.newInstance(new Integer(((AbmSentence) sentence).messageId).toString());
+			return factory.createBySymbol(new Integer(((AbmSentence) sentence).messageId).toString());
 		} else {
 			return null;
 		}

@@ -29,42 +29,42 @@ public class AlmSentence extends ParametricSentence {
 	@SentenceField(order = 2, fieldType="integer")
 	public int sentenceNumber;
 	
-	@SentenceField(order = 3, fieldType="integer", width = 2)
+	@SentenceField(order = 3, fieldType="integer", fieldWidth = 2)
 	public int satellitePRNNumber;
 	
 	@SentenceField(order = 4, fieldType="integer")
 	public int gpsWeekNumber;
 	
-	@SentenceField(order = 5, fieldType="hex", width = 2)
+	@SentenceField(order = 5, fieldType="hex", fieldWidth = 2)
 	public int svHealth;
 	
-	@SentenceField(order = 6, fieldType="hex", width = 4)
+	@SentenceField(order = 6, fieldType="hex", fieldWidth = 4)
 	public int eccentricity;
 	
-	@SentenceField(order = 7, fieldType="hex", width = 2)
+	@SentenceField(order = 7, fieldType="hex", fieldWidth = 2)
 	public int almanacReferenceTime;
 	
-	@SentenceField(order = 8, fieldType="hex", width = 4)
+	@SentenceField(order = 8, fieldType="hex", fieldWidth = 4)
 	public int inclinationAngle;
 	
-	@SentenceField(order = 9, fieldType="hex", width = 4)
+	@SentenceField(order = 9, fieldType="hex", fieldWidth = 4)
 	public int rateOfRightAscension;
 	
-	@SentenceField(order = 10, fieldType="hex", width = 6)
+	@SentenceField(order = 10, fieldType="hex", fieldWidth = 6)
 	public int rootOfSemiMajorAxis;
 	
-	@SentenceField(order = 11, fieldType="hex", width = 6)
+	@SentenceField(order = 11, fieldType="hex", fieldWidth = 6)
 	public int argumentOfPerigee;
 	
-	@SentenceField(order = 12, fieldType="hex", width = 6)
+	@SentenceField(order = 12, fieldType="hex", fieldWidth = 6)
 	public int longtitudeOfAscensionNode;
 	
-	@SentenceField(order = 13, fieldType="hex", width = 6)
+	@SentenceField(order = 13, fieldType="hex", fieldWidth = 6)
 	public int meanAnomaly;
 	
-	@SentenceField(order = 14, fieldType="hex", width = 3)
+	@SentenceField(order = 14, fieldType="hex", fieldWidth = 3)
 	public int clockParameter1;
 	
-	@SentenceField(order = 15, fieldType="hex", width = 3)
+	@SentenceField(order = 15, fieldType="hex", fieldWidth = 3)
 	public int clockParameter2;
 }

@@ -38,21 +38,6 @@ public abstract class NmeaSentence implements INmeaSentence {
 		return receiveDate;
 	}
 	
-	static public void print(NmeaSentence sentence) {
-		
-		List<Field> fields = AbstractNmeaSentenceCodec.getSentenceFields((NmeaSentence)sentence);
-		
-		for (Field field : fields) {
-			try {
-				System.out.println(field.getName() + ": " + field.get(sentence).toString());
-			} catch (IllegalArgumentException
-					| IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(this.sentenceType()).append("\n");

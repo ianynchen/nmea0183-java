@@ -2,31 +2,11 @@ package com.antu.nmea.sentence.field.codec;
 
 import java.lang.reflect.Field;
 
-import com.antu.nmea.annotation.SentenceField;
+import com.antu.nmea.annotation.FieldSetting;
 
 public class HexSentenceFieldCodec extends AbstractSentenceFieldCodec {
 
 	public HexSentenceFieldCodec() {
-	}
-
-	@Override
-	public boolean encode(StringBuilder builder, Object sentenceObject,
-			SentenceField annotation, Field field) {
-
-		try {
-			Object obj = field.get(sentenceObject);
-			
-			if (obj instanceof Integer) {
-				
-				builder.append(',').append(HexSentenceFieldCodec.toHexString((int) obj, annotation.width()));
-			} else {
-				return false;
-			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
-		}
-
-		return true;
 	}
 
 	@Override
@@ -37,22 +17,6 @@ public class HexSentenceFieldCodec extends AbstractSentenceFieldCodec {
 	@Override
 	public int requiredSegments() {
 		return 1;
-	}
-
-	@Override
-	protected boolean doDecode(String[] segments, Object sentenceObject,
-			Field field, int startIndex) {
-
-		try {
-			Integer value = HexSentenceFieldCodec.toInteger(segments[startIndex]);
-			if (value != null)
-				field.set(sentenceObject, value);
-			else
-				return false;
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
-		}
-		return true;
 	}
 
 	public static Integer toInteger(String hexString) {
@@ -102,5 +66,61 @@ public class HexSentenceFieldCodec extends AbstractSentenceFieldCodec {
 		} else {
 			return hex.substring(8 - width);
 		}
+	}
+
+	@Override
+	protected boolean doDecode(String[] segments, Object obj, Field field,
+			FieldSetting setting, int startIndex) {
+
+		try {
+			
+			if (segments[startIndex].isEmpty()) {
+				if (setting.isRequired()) {
+					return false;
+				} else {
+					field.set(obj, Integer.parseInt(setting.getDefaultValue()));
+					return true;
+				}
+			}
+			
+			Integer value = HexSentenceFieldCodec.toInteger(segments[startIndex]);
+			if (value != null)
+				field.set(obj, value);
+			else
+				return false;
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected boolean doEncode(StringBuilder builder, Object obj, Field field,
+			FieldSetting setting) {
+
+		try {
+			Object value = field.get(obj);
+			
+			if (value == null) {
+				if (setting.isRequired())
+					return false;
+				else {
+					builder.append(",");
+					return true;
+				}
+			}
+			
+			if (value instanceof Integer) {
+				
+				builder.append(',').append(HexSentenceFieldCodec.toHexString((int) value, 
+						setting.getFieldWidth()));
+			} else {
+				return false;
+			}
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			return false;
+		}
+
+		return true;
 	}
 }

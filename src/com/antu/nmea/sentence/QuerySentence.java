@@ -18,7 +18,6 @@ public class QuerySentence extends NmeaSentence {
 	
 	@Override
 	public String sentenceType() {
-		// TODO Auto-generated method stub
 		return "query";
 	}
 

@@ -3,10 +3,10 @@ package com.antu.nmea.message.field.codec;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.annotation.FieldSetting;
 import com.antu.nmea.sentence.ais.AbstractAisSentence;
 
-public class SpeedMessageFieldCodec implements IMessageFieldCodec {
+public class SpeedMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	public SpeedMessageFieldCodec() {
 	}
@@ -17,11 +17,9 @@ public class SpeedMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, Object obj,
-			Field field) {
-		
-		MessageField annotation = field.getAnnotation(MessageField.class);
-		Short b = MessageFieldCodecHelper.parseShort(bits, startIndex, annotation.requiredBits(), false);
+	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+			Field field, FieldSetting setting) {
+		Short b = MessageFieldCodecHelper.parseShort(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (b == null || b < 0)
 			return false;
@@ -40,8 +38,8 @@ public class SpeedMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean encode(List<Byte> bits, Object obj, Field field,
-			MessageField annotation) {
+	protected boolean doEncode(List<Byte> bits, Object obj, Field field,
+			FieldSetting setting) {
 		
 		try {
 			Double val = field.getDouble(obj);
@@ -54,7 +52,7 @@ public class SpeedMessageFieldCodec implements IMessageFieldCodec {
 					b = (short) (val * 10);
 				}
 			}
-			if (!MessageFieldCodecHelper.shortToBits(bits, b, annotation.requiredBits(), false)) {
+			if (!MessageFieldCodecHelper.shortToBits(bits, b, setting.getFieldWidth(), false)) {
 				return false;
 			}
 			return true;

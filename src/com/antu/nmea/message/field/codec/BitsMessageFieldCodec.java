@@ -3,10 +3,10 @@ package com.antu.nmea.message.field.codec;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.annotation.FieldSetting;
 import com.antu.util.PrintableList;
 
-public class BitsMessageFieldCodec implements IMessageFieldCodec {
+public class BitsMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	public BitsMessageFieldCodec() {
 	}
@@ -17,13 +17,11 @@ public class BitsMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, Object obj,
-			Field field) {
+	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+			Field field, FieldSetting setting) {
 		
-		MessageField annotation = field.getAnnotation(MessageField.class);
-
 		PrintableList<Byte> result = new PrintableList<Byte>();
-		for (int i = 0; i < annotation.requiredBits(); i++) {
+		for (int i = 0; i < setting.getFieldWidth(); i++) {
 			result.add(bits.get(i + startIndex));
 		}
 		
@@ -37,8 +35,8 @@ public class BitsMessageFieldCodec implements IMessageFieldCodec {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean encode(List<Byte> bits, Object obj, Field field,
-			MessageField annotation) {
+	protected boolean doEncode(List<Byte> bits, Object obj, Field field,
+			FieldSetting setting) {
 		
 		try {
 			Object val = field.get(obj);

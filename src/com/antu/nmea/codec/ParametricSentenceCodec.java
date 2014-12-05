@@ -1,9 +1,6 @@
 package com.antu.nmea.codec;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +9,6 @@ import com.antu.nmea.codec.exception.SentenceFieldCodecNotFoundException;
 import com.antu.nmea.sentence.INmeaSentence;
 import com.antu.nmea.sentence.ParametricSentenceFactory;
 import com.antu.nmea.sentence.field.codec.ISentenceFieldCodec;
-import com.antu.nmea.sentence.field.codec.SentenceFieldCodecManager;
 import com.antu.util.PrintableList;
 
 public class ParametricSentenceCodec extends AbstractNmeaSentenceCodec {
@@ -37,6 +33,7 @@ public class ParametricSentenceCodec extends AbstractNmeaSentenceCodec {
 	@Override
 	protected boolean postDecodeProcess(INmeaSentence sentence) {
 	
+		this.setChanged();
 		this.notifyObservers(sentence);
 		return true;
 	}
@@ -64,7 +61,7 @@ public class ParametricSentenceCodec extends AbstractNmeaSentenceCodec {
 		for (Field field : fields) {
 				
 			SentenceField annotation = field.getAnnotation(SentenceField.class);
-			ISentenceFieldCodec fieldCodec = null;//SentenceFieldCodecManager.instance().getCodec(annotation.fieldType());
+			ISentenceFieldCodec fieldCodec = null;
 			
 			if (annotation.isGroup())
 				fieldCodec = this.getGroupCodec(annotation);
@@ -75,7 +72,7 @@ public class ParametricSentenceCodec extends AbstractNmeaSentenceCodec {
 				throw new SentenceFieldCodecNotFoundException("field codec not found for: " + field.getName());
 			}
 			
-			if (!fieldCodec.encode(builder, sentence, annotation, field)) {
+			if (!fieldCodec.encode(builder, sentence, field)) {
 				return result;
 			}
 		}

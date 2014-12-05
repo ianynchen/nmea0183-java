@@ -181,8 +181,6 @@ public abstract class EncapsulationSentence extends NmeaSentence implements Enca
 			
 			if (i == length - 1) {
 				int fillBits = bits.size() % 6;
-				if (fillBits == 0)
-					fillBits = 6;
 
 				byte b = 0;
 				for (int j = 0; j < fillBits; j++) {
@@ -214,26 +212,6 @@ public abstract class EncapsulationSentence extends NmeaSentence implements Enca
 		for (int i = 0; i < sixBytes.length - padding; i++) {
 			result.add(sixBytes[i]);
 		}
-		
-/*		for (int i = 0; i < sixBytes.length; i++) {
-		
-			byte[] bits = new byte[6];
-			bits[0] = (byte) (sixBytes[i] & 0x20 >> 5);
-			bits[1] = (byte) (sixBytes[i] & 0x10 >> 4);
-			bits[2] = (byte) (sixBytes[i] & 0x08 >> 3);
-			bits[3] = (byte) (sixBytes[i] & 0x04 >> 2);
-			bits[4] = (byte) (sixBytes[i] & 0x02 >> 1);
-			bits[5] = (byte) (sixBytes[i] & 0x01);
-			
-			int index = 6;
-			if (i == sixBytes.length - 1) {
-				index = 6 - fillBits;
-			} 
-
-			for (int j = 0; j < index; j++) {
-				result.add(bits[j]);
-			}
-		}*/
 		
 		return result;
 	}

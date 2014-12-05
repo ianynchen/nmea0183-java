@@ -2,6 +2,7 @@ package com.antu.nmea.message.field.codec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 import com.antu.nmea.util.StringHelper;
@@ -232,14 +233,14 @@ public class MessageFieldCodecHelper {
 		
 		if (numberOfBits > 8)
 			return false;
-
-		for (int i = numberOfBits - 1; i >= 0; i--) {
-			
-			byte val = (byte) (value & (0x0001 << i));
-			val >>= i;
-			bits.add(val);
-		}
 		
+		BitSet bs = BitSet.valueOf(new long[] { value });
+		for (int i = numberOfBits - 1; i >= 0; i--) {
+			if (bs.get(i))
+				bits.add((byte) 0x01);
+			else
+				bits.add((byte) 0x00);
+		}
 		return true;
 	}
 	
@@ -247,12 +248,13 @@ public class MessageFieldCodecHelper {
 		
 		if (numberOfBits > 16)
 			return false;
-
+		
+		BitSet bs = BitSet.valueOf(new long[] { value });
 		for (int i = numberOfBits - 1; i >= 0; i--) {
-			
-			byte val = (byte) (value & (0x0001 << i));
-			val >>= i;
-			bits.add(val);
+			if (bs.get(i))
+				bits.add((byte) 0x01);
+			else
+				bits.add((byte) 0x00);
 		}
 		return true;
 	}
@@ -261,12 +263,13 @@ public class MessageFieldCodecHelper {
 		
 		if (numberOfBits > 32)
 			return false;
-
+		
+		BitSet bs = BitSet.valueOf(new long[] { value });
 		for (int i = numberOfBits - 1; i >= 0; i--) {
-			
-			byte val = (byte) (value & (0x0001 << i));
-			val >>= i;
-			bits.add(val);
+			if (bs.get(i))
+				bits.add((byte) 0x01);
+			else
+				bits.add((byte) 0x00);
 		}
 		return true;
 	}
@@ -275,12 +278,13 @@ public class MessageFieldCodecHelper {
 		
 		if (numberOfBits > 64)
 			return false;
-
+		
+		BitSet bs = BitSet.valueOf(new long[] { value });
 		for (int i = numberOfBits - 1; i >= 0; i--) {
-			
-			byte val = (byte) (value & (0x0001 << i));
-			val >>= i;
-			bits.add(val);
+			if (bs.get(i))
+				bits.add((byte) 0x01);
+			else
+				bits.add((byte) 0x00);
 		}
 		return true;
 	}

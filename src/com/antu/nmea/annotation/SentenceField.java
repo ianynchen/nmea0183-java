@@ -73,9 +73,9 @@ public @interface SentenceField {
 	 */
 	String groupItemClass() default "";
 	
-	int decimalPlaces() default 0;
+	int precision() default 0;
 	
-	int width() default 0;
+	int fieldWidth() default 0;
 	
 	/**
 	 * This is used to form multi and encapsulation sentences to make

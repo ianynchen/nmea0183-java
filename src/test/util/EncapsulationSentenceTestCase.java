@@ -2,13 +2,10 @@ package test.util;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import junit.framework.Assert;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SimpleLog;
 import org.junit.Test;
 
 import com.antu.nmea.codec.exception.SentenceCodecNotFoundException;
@@ -36,7 +33,7 @@ public class EncapsulationSentenceTestCase {
 
 	@Test
 	public void testMessage1() {
-		com.antu.nmea.codec.CodecManager manager = new com.antu.nmea.codec.CodecManager();
+		final com.antu.nmea.codec.CodecManager manager = new com.antu.nmea.codec.CodecManager();
 		manager.addObserver(new Observer() {
 
 			@Override
@@ -44,6 +41,11 @@ public class EncapsulationSentenceTestCase {
 				
 				if (arg instanceof NmeaSentence) {
 					System.out.println(arg.toString());
+					
+					List<String> result = manager.encode("AI", (NmeaSentence)arg);
+					System.out.println("Encoded message: " + result.get(0));
+					assertEquals(1, result.size());
+					assertEquals("!AIVDM,1,1,,1,1P000Oh1IT1svTP2r:43grwb05q4,0*01\r\n", result.get(0));
 				}
 			}
 		
@@ -53,19 +55,14 @@ public class EncapsulationSentenceTestCase {
 		try {
 			manager.decode("!AIVDM,1,1,,1,1P000Oh1IT1svTP2r:43grwb05q4,0*01\r\n");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SentenceFieldCodecNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SentenceCodecNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -3,9 +3,9 @@ package com.antu.nmea.message.field.codec;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.annotation.FieldSetting;
 
-public class ShortMessageFieldCodec implements IMessageFieldCodec {
+public class ShortMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	public ShortMessageFieldCodec() {
 	}
@@ -16,15 +16,13 @@ public class ShortMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, 
-			Object obj, Field field) {
+	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+			Field field, FieldSetting setting) {
 
-		MessageField annotation = field.getAnnotation(MessageField.class);
-
-		if (bits.size() < startIndex + annotation.requiredBits())
+		if (bits.size() < startIndex + setting.getFieldWidth())
 			return false;
 		
-		Short value = MessageFieldCodecHelper.parseShort(bits, startIndex, annotation.requiredBits(), false);
+		Short value = MessageFieldCodecHelper.parseShort(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (value != null) {
 			try {
@@ -39,11 +37,11 @@ public class ShortMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean encode(List<Byte> bits, Object obj, Field field,
-			MessageField annotation) {
+	protected boolean doEncode(List<Byte> bits, Object obj, Field field,
+			FieldSetting setting) {
 		
 		try {
-			if (!MessageFieldCodecHelper.shortToBits(bits, field.getByte(obj), annotation.requiredBits(), false)) {
+			if (!MessageFieldCodecHelper.shortToBits(bits, field.getShort(obj), setting.getFieldWidth(), false)) {
 				return false;
 			}
 			return true;

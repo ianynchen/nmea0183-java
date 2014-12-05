@@ -3,7 +3,6 @@ package test.util;
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SimpleLog;
 import org.junit.Before;
 import org.junit.Test;
 

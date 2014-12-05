@@ -39,6 +39,7 @@ public class PrintableList<T> extends ArrayList<T> {
 		return result;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object obj) {
 		

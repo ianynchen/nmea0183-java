@@ -25,7 +25,7 @@ public class BbmSentenceCodec extends EncapsulationSentenceCodec {
 			InstantiationException, IllegalAccessException {
 		
 		if (sentence instanceof BbmSentence) {
-			return factory.newInstance(new Integer(((BbmSentence) sentence).messageId).toString());
+			return factory.createBySymbol(new Integer(((BbmSentence) sentence).messageId).toString());
 		} else {
 			return null;
 		}

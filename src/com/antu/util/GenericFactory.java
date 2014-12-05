@@ -11,6 +11,7 @@ public class GenericFactory<E> {
 	
 	private List<String> registeredPackages;
 	private HashMap<String, String> symbolsToClassNameMapping;
+	@SuppressWarnings("rawtypes")
 	private HashMap<String, Class> initializedClasses;
 	private HashMap<String, E> initializedObjects;
 	
@@ -18,6 +19,7 @@ public class GenericFactory<E> {
 	
 	static private Log logger = LogFactory.getLog(GenericFactory.class);
 
+	@SuppressWarnings("rawtypes")
 	public GenericFactory(String pattern) {
 		
 		this.registeredPackages = new ArrayList<String>();
@@ -28,6 +30,7 @@ public class GenericFactory<E> {
 		this.symbolsToClassNameMapping = new HashMap<String, String>();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GenericFactory(String defaultPackage, String pattern) {
 		
 		this.registeredPackages = new ArrayList<String>();
@@ -46,17 +49,6 @@ public class GenericFactory<E> {
 		
 		if (!this.registeredPackages.contains(packageName)) {
 			this.registeredPackages.add(packageName);
-		}
-	}
-	
-	public E newInstanceFromCache(String name)
-			throws InstantiationException, IllegalAccessException {
-		
-		if (this.initializedObjects.containsKey(name)) {
-			GenericFactory.logger.info("cached object found");
-			return this.initializedObjects.get(name);
-		} else {
-			return this.newInstance(name);
 		}
 	}
 	
@@ -89,7 +81,7 @@ public class GenericFactory<E> {
 	 * @param symbol
 	 * @return
 	 */
-	protected Class<?> findClassFromSymbol(String symbol) {
+	protected Class<?> findClassBySymbol(String symbol) {
 		
 		assert(symbol != null && !symbol.isEmpty());
 		String actualName = this.pattern.replace("?", symbol);
@@ -116,6 +108,7 @@ public class GenericFactory<E> {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
+	@SuppressWarnings("unchecked")
 	public E getByFullName(String className) 
 			throws InstantiationException, IllegalAccessException {
 		
@@ -147,7 +140,7 @@ public class GenericFactory<E> {
 			return this.getByFullName(this.symbolsToClassNameMapping.get(symbol));
 		} else {
 
-			Class<?> clz = this.findClassFromSymbol(symbol);
+			Class<?> clz = this.findClassBySymbol(symbol);
 			if (clz != null) {
 				this.symbolsToClassNameMapping.put(symbol, clz.getName());
 				E obj = this.getByFullName(clz.getName());
@@ -160,7 +153,7 @@ public class GenericFactory<E> {
 	@SuppressWarnings("unchecked")
 	public E createBySymbol(String symbol) 
 			throws InstantiationException, IllegalAccessException {
-		Class<?> clz = this.findClassFromSymbol(symbol);
+		Class<?> clz = this.findClassBySymbol(symbol);
 		
 		return (E)clz.newInstance();
 	}
@@ -170,45 +163,5 @@ public class GenericFactory<E> {
 			throws InstantiationException, IllegalAccessException {
 		Class<?> clz = this.findClass(className);
 		return (E)clz.newInstance();
-	}
-	
-	public E newInstance(String name, boolean useCache) 
-			throws InstantiationException, IllegalAccessException {
-		
-		if (!useCache) {
-			return this.newInstance(name);
-		} else {
-			return this.newInstanceFromCache(name);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public E newInstance(String name) throws InstantiationException, IllegalAccessException {
-		
-		Class<?> clz = null;
-		if (this.initializedClasses.containsKey(name)) {
-			clz = this.initializedClasses.get(name);
-		} else {
-			
-			String actualName = this.pattern.replace(this.pattern, name);
-			
-			for (String packageName : this.registeredPackages) {
-				
-				try {
-					clz = Class.forName(packageName + "." + actualName);
-					break;
-				} catch (ClassNotFoundException e) {
-				} 
-			}
-		}
-		
-		if (clz != null) {
-			E obj = (E)clz.newInstance();
-			this.initializedObjects.put(name, obj);
-			this.initializedClasses.put(name, clz);
-			return obj;
-		} else {
-			return null;
-		}
 	}
 }

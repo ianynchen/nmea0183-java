@@ -21,4 +21,8 @@ public @interface GroupItem {
 	boolean isRequired() default false;
 	
 	int requiredFields() default 1;
+	
+	String defaultValue() default "";
+	
+	int fieldWidth() default 1;
 }

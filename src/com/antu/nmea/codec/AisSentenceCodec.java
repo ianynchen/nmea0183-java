@@ -8,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import com.antu.nmea.message.field.codec.MessageFieldCodecHelper;
 import com.antu.nmea.sentence.EncapsulationSentence;
 import com.antu.nmea.sentence.IEncapsulatedSentence;
-import com.antu.nmea.sentence.ais.AbstractAisSentence;
 import com.antu.nmea.sentence.ais.IEncapsulatedAisMessage;
 import com.antu.util.GenericFactory;
 

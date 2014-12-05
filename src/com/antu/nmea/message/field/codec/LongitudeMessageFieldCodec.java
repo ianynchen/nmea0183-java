@@ -3,10 +3,10 @@ package com.antu.nmea.message.field.codec;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.annotation.FieldSetting;
 import com.antu.nmea.sentence.ais.AbstractAisSentence;
 
-public class LongitudeMessageFieldCodec implements IMessageFieldCodec {
+public class LongitudeMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	public LongitudeMessageFieldCodec() {
 	}
@@ -17,11 +17,9 @@ public class LongitudeMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, Object obj,
-			Field field) {
-		
-		MessageField annotation = field.getAnnotation(MessageField.class);
-		Integer val = MessageFieldCodecHelper.parseInteger(bits, startIndex, annotation.requiredBits(), true);
+	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+			Field field, FieldSetting setting) {
+		Integer val = MessageFieldCodecHelper.parseInteger(bits, startIndex, setting.getFieldWidth(), true);
 		
 		if (val == null)
 			return false;
@@ -38,8 +36,8 @@ public class LongitudeMessageFieldCodec implements IMessageFieldCodec {
 	}
 
 	@Override
-	public boolean encode(List<Byte> bits, Object obj, Field field,
-			MessageField annotation) {
+	protected boolean doEncode(List<Byte> bits, Object obj, Field field,
+			FieldSetting setting) {
 		
 		try {
 			Double val = field.getDouble(obj);
@@ -48,7 +46,7 @@ public class LongitudeMessageFieldCodec implements IMessageFieldCodec {
 			if (val != null && val >= -90 && val <= 90) {
 				b = (int) (val * 60 * 10000);
 			}
-			if (!MessageFieldCodecHelper.integerToBits(bits, b, annotation.requiredBits(), true)) {
+			if (!MessageFieldCodecHelper.integerToBits(bits, b, setting.getFieldWidth(), true)) {
 				return false;
 			}
 			return true;

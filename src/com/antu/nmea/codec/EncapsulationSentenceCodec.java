@@ -16,17 +16,15 @@ import com.antu.nmea.annotation.SentenceField;
 import com.antu.nmea.codec.exception.MessageFieldCodecNotFoundException;
 import com.antu.nmea.codec.exception.SentenceFieldCodecNotFoundException;
 import com.antu.nmea.message.field.codec.IMessageFieldCodec;
-import com.antu.nmea.message.field.codec.MessageFieldCodecManager;
 import com.antu.nmea.sentence.EncapsulationSentence;
 import com.antu.nmea.sentence.IEncapsulatedSentence;
 import com.antu.nmea.sentence.INmeaSentence;
 import com.antu.nmea.sentence.field.codec.ISentenceFieldCodec;
-import com.antu.nmea.sentence.field.codec.ListSentenceFieldCodec;
-import com.antu.nmea.sentence.field.codec.SentenceFieldCodecManager;
 import com.antu.nmea.util.Pair;
 import com.antu.nmea.util.SentenceStore;
 import com.antu.nmea.util.StringHelper;
 import com.antu.util.GenericFactory;
+import com.antu.util.PrintableList;
 
 abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCodec {
 	
@@ -58,6 +56,7 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			
 		}, INIT_DELAY, CHECK_INTERVAL);
 		messageFieldCodecFactory = new GenericFactory<IMessageFieldCodec>("com.antu.nmea.message.field.codec", "?MessageFieldCodec");
+		new GenericFactory<ISentenceFieldCodec>("com.antu.nmea.sentence.field.codec", "?SentenceFieldCodec");
 	}
 
 	/**
@@ -120,6 +119,8 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			index += annotation.requiredBits();
 		}
 		
+		this.setChanged();
+		this.notifyObservers(sentence);
 		EncapsulationSentenceCodec.logger.info("message fields decoded, sentence: " + sentence.toString());
 	}
 
@@ -204,9 +205,10 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 					continue;
 				
 				length += annotation.charLength();
-				ISentenceFieldCodec fieldCodec = SentenceFieldCodecManager.instance().getCodec(annotation.fieldType());
-				if (!fieldCodec.encode(sb, sentence, null, field)) {
-					return new ArrayList<String>();
+				ISentenceFieldCodec fieldCodec = this.getCodec(annotation, field.getName());
+				
+				if (fieldCodec == null || !fieldCodec.encode(sb, sentence, field)) {
+					return new PrintableList<String>();
 				}
 			}
 			
@@ -240,7 +242,8 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 	@Override
 	protected boolean preEncodeProcess(INmeaSentence sentence) {
 		
-		List<Field> messageFields = AbstractNmeaSentenceCodec.getMessageFields(sentence);
+		IEncapsulatedSentence encap = ((EncapsulationSentence)sentence).getEncapsulatedSentence();
+		List<Field> messageFields = AbstractNmeaSentenceCodec.getMessageFields(encap);
 		List<Byte> bits = new ArrayList<Byte>();
 		
 		boolean success = true;
@@ -256,7 +259,7 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			}
 			
 			if (codec != null) {
-				if (!codec.encode(bits, sentence, field, annotation)) {
+				if (!codec.encode(bits, encap, field)) {
 					success = false;
 					break;
 				}
@@ -264,11 +267,19 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 		}
 		
 		if (success) {
-			Byte[] sixBits = com.antu.nmea.sentence.EncapsulationSentence.convertBitsToSixBits(bits);
-			String encoded = com.antu.nmea.sentence.EncapsulationSentence.convertSixBitsToString(sixBits);
 			
-			int remainder = sixBits.length % 6;
+			int remainder = bits.size() % 6;
 			int fillBits = (remainder == 0) ? 0 : 6 - remainder;
+			
+			for (int i = 0; i < fillBits; i++) {
+				bits.add((byte) 0);
+			}
+			
+			Byte[] bitArray = new Byte[bits.size()];
+			bitArray = bits.toArray(bitArray);
+			
+			String encoded = com.antu.nmea.sentence.EncapsulationSentence.convertSixBitsToString(bitArray);
+
 			((EncapsulationSentence)sentence).setEncapsulatedData(encoded);
 			((EncapsulationSentence)sentence).setFillBits(fillBits);
 		}

@@ -38,6 +38,7 @@ public class ParametricSentenceFactory {
 			sb.append('.').append(StringHelper.capitalizeFirstChar(sentenceType)).append("Sentence");
 			
 			try {
+				@SuppressWarnings("unchecked")
 				Class<ParametricSentence> clz = (Class<ParametricSentence>) Class.forName(sb.toString());
 				sentences.put(sentenceType, clz);
 

@@ -3,7 +3,6 @@ package com.antu.nmea.codec;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -261,6 +260,7 @@ public class CodecManager extends Observable implements Observer {
 										StringHelper.capitalizeFirstChar(sentenceType));
 						
 						if (codec != null) {
+							codec.addObserver(this);
 							codec.decode(timestamp, sentenceType, segments);
 						} else {
 							CodecManager.logger.error("unable to find proprietary codec for sentence type: " + sentenceType);
@@ -296,6 +296,7 @@ public class CodecManager extends Observable implements Observer {
 													StringHelper.capitalizeFirstChar(sentenceType));
 									
 									if (codec != null) {
+										codec.addObserver(this);
 										CodecManager.logger.info("codec located.");
 										codec.decode(timestamp, sentenceType, segments);
 									} else {
@@ -314,6 +315,7 @@ public class CodecManager extends Observable implements Observer {
 												StringHelper.capitalizeFirstChar(sentenceType));
 	
 								if (codec != null) {
+									codec.addObserver(this);
 									CodecManager.logger.info("codec for encapsulation sentence located.");
 									codec.decode(timestamp, sentenceType, segments);
 								} else {
@@ -337,9 +339,10 @@ public class CodecManager extends Observable implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 
+		CodecManager.logger.info("parsed object received: " + arg.toString());
 		if (arg instanceof INmeaSentence) {
 			
-			CodecManager.logger.info("parsed object received: " + arg.toString());
+			this.setChanged();
 			this.notifyObservers(arg);
 		}
 	}

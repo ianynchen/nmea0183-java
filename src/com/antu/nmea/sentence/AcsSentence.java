@@ -32,10 +32,10 @@ public class AcsSentence extends ParametricSentence {
 	@SentenceField(order = 3, fieldType = "time")
 	public UtcTime timeOfReceipt;
 	
-	@SentenceField(order = 4, fieldType = "integer", width = 2)
+	@SentenceField(order = 4, fieldType = "integer", fieldWidth = 2)
 	public int day;
 	
-	@SentenceField(order = 5, fieldType = "integer", width = 2)
+	@SentenceField(order = 5, fieldType = "integer", fieldWidth = 2)
 	public int month;
 	
 	@SentenceField(order = 6, fieldType = "integer")

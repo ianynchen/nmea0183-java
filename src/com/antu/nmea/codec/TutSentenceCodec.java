@@ -16,7 +16,6 @@ import com.antu.nmea.sentence.INmeaSentence;
 import com.antu.nmea.sentence.NmeaSentence;
 import com.antu.nmea.sentence.TutSentence;
 import com.antu.nmea.sentence.field.codec.ISentenceFieldCodec;
-import com.antu.nmea.sentence.field.codec.SentenceFieldCodecManager;
 import com.antu.nmea.util.StringHelper;
 import com.antu.nmea.util.TranslationCodeTable;
 
@@ -162,7 +161,7 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 		for (Field field : annotatedFields) {
 			SentenceField annotation = field.getAnnotation(SentenceField.class);
 			
-			ISentenceFieldCodec fieldCodec = SentenceFieldCodecManager.instance().getCodec(annotation.fieldType());
+			ISentenceFieldCodec fieldCodec = this.getCodec(annotation, field.getName());
 			
 			if (fieldCodec != null) {
 				boolean success = fieldCodec.decode(segments, sentence, field, index);
@@ -298,6 +297,7 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 	@Override
 	protected boolean postDecodeProcess(INmeaSentence sentence) {
 
+		this.setChanged();
 		this.notifyObservers(sentence);
 		return true;
 	}

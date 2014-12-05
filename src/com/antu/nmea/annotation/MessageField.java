@@ -16,11 +16,21 @@ public @interface MessageField {
 	
 	int startBit() default -1;
 	
+	/**
+	 * How many bits this field requires
+	 * @return
+	 */
 	int requiredBits();
 	
+	/**
+	 * Type of the field, used to get MessageFieldCodec.
+	 * @return
+	 */
 	String fieldType();
 
 	int order();
 	
 	boolean isGroup() default false;
+	
+	String defaultValue() default "";
 }

@@ -1,8 +1,6 @@
 package com.antu.nmea.codec;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,7 +11,6 @@ import java.util.Observable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.antu.nmea.annotation.GroupItem;
 import com.antu.nmea.annotation.GroupItemAnnotationSorter;
 import com.antu.nmea.annotation.MessageFieldAnnotationSorter;
 import com.antu.nmea.annotation.SentenceField;
@@ -25,7 +22,6 @@ import com.antu.nmea.sentence.INmeaSentence;
 import com.antu.nmea.sentence.field.codec.AbstractSentenceFieldCodec;
 import com.antu.nmea.sentence.field.codec.IGroupSentenceFieldCodec;
 import com.antu.nmea.sentence.field.codec.ISentenceFieldCodec;
-import com.antu.nmea.sentence.field.codec.SentenceFieldCodecManager;
 import com.antu.nmea.util.StringHelper;
 import com.antu.util.GenericFactory;
 import com.antu.util.PrintableList;
@@ -280,38 +276,6 @@ public abstract class AbstractNmeaSentenceCodec extends Observable {
 		
 		return segmentsRequired;
 	}
-	
-	/*protected int findSegmentsRequiredBySentenceFieldCodecs(List<Field> annotatedFields, int startIndex) {
-		int count = 0;
-		
-		for (Field field : annotatedFields) {
-			SentenceField annotation = field.getAnnotation(SentenceField.class);
-			try {
-				ISentenceFieldCodec codec = SentenceFieldCodecManager.instance().getCodec(annotation.fieldType());
-				
-				count += codec.requiredSegments();
-			} catch (SentenceFieldCodecNotFoundException e) {
-				return -1;
-			}
-		}
-		return count;
-	}*/
-	
-	/**
-	 * Checks to make sure there are no other group items in an INmeaSentence object
-	 * @param annotatedFields
-	 * @param index
-	 */
-	/*protected void assureNoMoreGroupItems(List<Field> annotatedFields, int index) {
-		
-		for (int i = index; i < annotatedFields.size(); i++) {
-			SentenceField annotation = annotatedFields.get(i).getAnnotation(SentenceField.class);
-			
-			if (annotation.isGroup())
-				throw new MultipleGroupItemException(annotatedFields.get(i).getName() + 
-						": " +annotation.fieldType());
-		}
-	}*/
 
 	protected boolean doDecode(String sentenceType, INmeaSentence sentence, String[] segments) 
 			throws SentenceFieldCodecNotFoundException {
@@ -334,7 +298,7 @@ public abstract class AbstractNmeaSentenceCodec extends Observable {
 						AbstractNmeaSentenceCodec.logger.info("decoded: " + field.getName());
 					} else {
 						if (annotation.isRequired()) {
-							AbstractNmeaSentenceCodec.logger.info("unable to decode a required field: " + field.getName());
+							AbstractNmeaSentenceCodec.logger.error("unable to decode a required field: " + field.getName());
 							return false;
 						} else {
 							index += codec.requiredSegments();

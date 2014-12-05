@@ -51,6 +51,7 @@ public class QuerySentenceCodec extends AbstractNmeaSentenceCodec {
 	@Override
 	protected boolean postDecodeProcess(INmeaSentence sentence) {
 
+		this.setChanged();
 		this.notifyObservers(sentence);
 		return true;
 	}

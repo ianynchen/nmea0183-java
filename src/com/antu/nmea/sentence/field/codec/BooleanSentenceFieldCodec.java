@@ -2,33 +2,9 @@ package com.antu.nmea.sentence.field.codec;
 
 import java.lang.reflect.Field;
 
-import com.antu.nmea.annotation.SentenceField;
+import com.antu.nmea.annotation.FieldSetting;
 
 public class BooleanSentenceFieldCodec extends AbstractSentenceFieldCodec {
-
-	@Override
-	public boolean encode(StringBuilder builder, Object sentenceObject,
-			SentenceField annotation, Field field) {
-
-		try {
-			Object value = field.get(sentenceObject);
-			 
-			if (value instanceof Boolean) {
-				if ((Boolean)value) {
-					builder.append(",A");
-				} else {
-					builder.append(",V");
-				}
-				return true;
-			} else if (!annotation.defaultValue().isEmpty()) {
-				builder.append(",").append(annotation.defaultValue());
-				return true;
-			}
-			return false;
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
-		}
-	}
 
 	@Override
 	public String fieldCodecType() {
@@ -41,15 +17,27 @@ public class BooleanSentenceFieldCodec extends AbstractSentenceFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(String[] segments, Object sentenceObject,
-			Field field, int startIndex) {
+	protected boolean doDecode(String[] segments, Object obj, Field field,
+			FieldSetting setting, int startIndex) {
 		
-		SentenceField annotation = field.getAnnotation(SentenceField.class);
+		if (segments[startIndex].isEmpty()) {
+			
+			if (setting.isRequired()) {
+				return false;
+			} else {
+				try {
+					field.set(obj, Boolean.getBoolean(setting.getDefaultValue()));
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					return false;
+				}
+				return true;
+			}
+		};
 		
 		if (segments[startIndex].equals("A") || segments[startIndex].equals("a")) {
 			
 			try {
-				field.set(sentenceObject, true);
+				field.set(obj, true);
 				return true;
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				return false;
@@ -58,15 +46,7 @@ public class BooleanSentenceFieldCodec extends AbstractSentenceFieldCodec {
 		} else if (segments[startIndex].equals("V") || segments[startIndex].equals("v")) {
 			
 			try {
-				field.set(sentenceObject, false);
-				return true;
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				return false;
-			}
-		} else if (segments[startIndex].isEmpty() && !annotation.isRequired()) {
-			
-			try {
-				field.set(sentenceObject, Boolean.parseBoolean(annotation.defaultValue()));
+				field.set(obj, false);
 				return true;
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				return false;
@@ -75,4 +55,32 @@ public class BooleanSentenceFieldCodec extends AbstractSentenceFieldCodec {
 		return false;
 	}
 
+	@Override
+	protected boolean doEncode(StringBuilder builder, Object obj, Field field,
+			FieldSetting setting) {
+
+		try {
+			Object value = field.get(obj);
+			 
+			if (value == null) {
+				if (setting.isRequired()) {
+					return false;
+				} else {
+					builder.append(",");
+					return true;
+				}
+			}
+			if (value instanceof Boolean) {
+				if ((Boolean)value) {
+					builder.append(",A");
+				} else {
+					builder.append(",V");
+				}
+				return true;
+			}
+			return false;
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			return false;
+		}
+	}
 }

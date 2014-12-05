@@ -8,11 +8,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.antu.nmea.annotation.FieldSetting;
 import com.antu.nmea.annotation.GroupItem;
 import com.antu.nmea.annotation.GroupItemAnnotationSorter;
 import com.antu.nmea.annotation.SentenceField;
-import com.antu.nmea.annotation.SentenceFieldAnnotationSorter;
-import com.antu.nmea.codec.AbstractNmeaSentenceCodec;
+import com.antu.nmea.util.StringHelper;
 import com.antu.util.GenericFactory;
 import com.antu.util.PrintableList;
 
@@ -29,13 +29,6 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 		super();
 		this.groupItemFactory = new GenericFactory<Object>("");
 		this.codecFactory = new GenericFactory<AbstractSentenceFieldCodec>("com.antu.nmea.sentence.field.codec", "?SentenceFieldCodec");
-	}
-
-	@Override
-	public boolean encode(StringBuilder builder, Object sentenceObject,
-			SentenceField annotation, Field field) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -93,6 +86,7 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 		return segments;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected boolean decodeItem(PrintableList listItem, String[] segments, 
 			int startIndex, String groupItemClass) {
 		
@@ -126,8 +120,17 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 	}
 
 	@Override
-	protected boolean doDecode(String[] segments, Object sentenceObject,
-			Field field, int startIndex) {
+	public int totalItems(SentenceField annotation, int startIndex,
+			int segmentsLength, int segmentsPerItem) {
+		
+		int totalSegmentsAvailable = segmentsLength - startIndex - annotation.reservedSegments();
+		
+		return totalSegmentsAvailable / segmentsPerItem;
+	}
+
+	@Override
+	protected boolean doDecode(String[] segments, Object obj, Field field,
+			FieldSetting setting, int startIndex) {
 
 		SentenceField annotation = field.getAnnotation(SentenceField.class);
 		
@@ -160,13 +163,38 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public int totalItems(SentenceField annotation, int startIndex,
-			int segmentsLength, int segmentsPerItem) {
+	protected boolean doEncode(StringBuilder builder, Object obj, Field field,
+			FieldSetting setting) {
 		
-		int totalSegmentsAvailable = segmentsLength - startIndex - annotation.reservedSegments();
-		
-		return totalSegmentsAvailable / segmentsPerItem;
+		try {
+			List items = (List)field.get(obj);
+			
+			for (Object item : items) {
+				
+				List<Field> fields = this.getGroupItems(item);
+				
+				for (Field itemField : fields) {
+					
+					GroupItem itemAnnotation = itemField.getAnnotation(GroupItem.class);
+					
+					AbstractSentenceFieldCodec codec = codecFactory.getBySymbol(StringHelper.capitalizeFirstChar(itemAnnotation.itemType()));
+					
+					if (codec != null) {
+						codec.encode(builder, item, itemField);
+					} else {
+						ListSentenceFieldCodec.logger.error("unable to retrieve codec for item: " + itemAnnotation.itemType());
+						return false;
+					}
+				}
+			}
+			
+		} catch (IllegalArgumentException | IllegalAccessException | InstantiationException e) {
+			ListSentenceFieldCodec.logger.error("unable to retrieve list object", e);
+			return false;
+		}
+		return false;
 	}
 
 }

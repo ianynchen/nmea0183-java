@@ -10,7 +10,6 @@ public final class TranslationCodeTable {
 	private HashMap<String, String> proprietaryCode = new HashMap<String, String>();
 	
 	private TranslationCodeTable() {
-		// TODO Auto-generated constructor stub
 	}
 
 	static public TranslationCodeTable instance() {

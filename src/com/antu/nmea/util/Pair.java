@@ -17,7 +17,8 @@ public class Pair<A, B> {
     	return (hashFirst + hashSecond) * hashSecond + hashFirst;
     }
 
-    public boolean equals(Object other) {
+    @SuppressWarnings("rawtypes")
+	public boolean equals(Object other) {
     	if (other instanceof Pair) {
     		Pair otherPair = (Pair) other;
     		return 
