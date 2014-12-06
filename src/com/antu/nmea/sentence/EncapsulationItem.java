@@ -24,7 +24,7 @@ public interface EncapsulationItem extends IGroupedSentence {
 	
 	void setSentenceNumber(int number);
 	
-	void setSequenceId(int sequence);
+	void setSequenceId(Integer sequence);
 	
 	IEncapsulatedSentence getEncapsulatedSentence();
 	

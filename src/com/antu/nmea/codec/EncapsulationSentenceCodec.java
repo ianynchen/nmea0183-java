@@ -149,13 +149,18 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 	protected void storeSentence(EncapsulationSentence sentence) 
 			throws MessageFieldCodecNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		
-		Pair<Integer, Integer> key = new Pair<Integer, Integer>(sentence.getSequentialMessageId(),
-				this.getMessageId(sentence));
-		EncapsulationSentence sent = this.storedSentences.addItem(key, sentence);
-		
-		EncapsulationSentenceCodec.logger.info("sentence obtained: " + sent.getClass().getName());
-		if (sent != null && sent.decodeStringData(sent.getEncapsulatedData())) {
+		if (sentence.getTotalNumberOfSentences() == 1) {
+			sentence.decodeStringData(sentence.getEncapsulatedData());
 			this.decodeMessageFields(sentence);
+		} else {
+			Pair<Integer, Integer> key = new Pair<Integer, Integer>(sentence.getSequentialMessageId(),
+					this.getMessageId(sentence));
+			EncapsulationSentence sent = this.storedSentences.addItem(key, sentence);
+			
+			EncapsulationSentenceCodec.logger.info("sentence obtained: " + sent.getClass().getName());
+			if (sent != null && sent.decodeStringData(sent.getEncapsulatedData())) {
+				this.decodeMessageFields(sent);
+			}
 		}
 	}
 
@@ -182,21 +187,30 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 		
 		// calculate how many sentences needed
 		int maxChars = 80 - 8 - length;
-		int totalSentences = (int) Math.ceil(((EncapsulationSentence) sentence).getEncapsulatedData().length() / maxChars);
+		
+		int bodyLength = ((EncapsulationSentence) sentence).getEncapsulatedData().length();
+		int sentences = bodyLength / maxChars;
+		int remainder = bodyLength % maxChars;
+		
+		if (remainder > 0)
+			sentences++;
+		int totalSentences = sentences;
 
 		List<StringBuilder> builders = new ArrayList<StringBuilder>();
 		
 		// tries to construct sentence, anything that is ignored, everything
 		// after that has to be ignored as well.
-		for (int i = 0; i < totalSentences; i++) {
+		for (int i = 1; i <= totalSentences; i++) {
 			
 			StringBuilder sb = new StringBuilder("!");
 			sb.append(talker).append(sentence.sentenceType().toUpperCase());
 			
 			((EncapsulationSentence) sentence).setTotalSentenceCount(totalSentences);
 			((EncapsulationSentence) sentence).setSentenceNumber(i);
-			((EncapsulationSentence) sentence).setSequenceId(this.sequenceId);
-
+			if (totalSentences > 1)
+				((EncapsulationSentence) sentence).setSequenceId(this.sequenceId);
+			else
+				((EncapsulationSentence) sentence).setSequenceId(null);
 			for (Field field : fields) {
 					
 				SentenceField annotation = field.getAnnotation(SentenceField.class);
@@ -214,7 +228,12 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			
 			builders.add(sb);
 		}
-		this.sequenceId++;
+		
+		if (totalSentences > 1) {
+			this.sequenceId++;
+			if (this.sequenceId > 9)
+				this.sequenceId -= 9;
+		}
 			
 		List<StringBuilder> sentenceBuilders = this.breakSentences(builders, 
 				(EncapsulationSentence) sentence, ((EncapsulationSentence) sentence).getTotalNumberOfSentences(),
@@ -301,7 +320,6 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			} else {
 				sb.append(content.substring(i * totalNumberOfSentences, i * totalNumberOfSentences + maxLength));				
 			}
-			builders.add(sb);
 		}
 		
 		return builders;

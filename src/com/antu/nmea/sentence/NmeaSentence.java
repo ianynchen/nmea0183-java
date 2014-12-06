@@ -50,7 +50,12 @@ public abstract class NmeaSentence implements INmeaSentence {
 				
 				if (!annotation.isIgnoredInReconstruction()) {
 					sb.append(field.getName()).append(": ");
+					
+					if (field.get(this) == null) {
+						sb.append("null");
+					} else {
 						sb.append(field.get(this).toString());
+					}
 					sb.append("\n");
 				}
 			}

@@ -105,7 +105,7 @@ public class BbmSentence extends AbstractAisSentence {
 	}
 
 	@Override
-	public void setSequenceId(int sequence) {
+	public void setSequenceId(Integer sequence) {
 		
 		this.setSequenceId(sequence);
 	}

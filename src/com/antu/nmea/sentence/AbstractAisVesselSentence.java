@@ -25,8 +25,8 @@ public abstract class AbstractAisVesselSentence extends AbstractAisSentence {
 	@SentenceField(order = 2, fieldType = "integer")
 	public int sentenceNumber = 1;
 	
-	@SentenceField(order = 3, fieldType = "integer", isRequired = false, defaultValue = "10")
-	public int sequentialMessageIdentifier = 0;
+	@SentenceField(order = 3, fieldType = "integer", isRequired = false)
+	public Integer sequentialMessageIdentifier = null;
 	
 	@SentenceField(order = 4, fieldType = "char")
 	public char aisChannel;
@@ -73,7 +73,7 @@ public abstract class AbstractAisVesselSentence extends AbstractAisSentence {
 	}
 	
 	@Override
-	public void setSequenceId(int sequence) {
+	public void setSequenceId(Integer sequence) {
 		this.sequentialMessageIdentifier = sequence;
 	}
 
