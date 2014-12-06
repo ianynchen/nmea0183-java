@@ -20,7 +20,7 @@ public class ApbSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "APB";
+		return "apb";
 	}
 
 	@SentenceField(order = 1, fieldType = "boolean")

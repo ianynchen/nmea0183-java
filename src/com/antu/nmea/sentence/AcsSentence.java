@@ -20,11 +20,11 @@ public class AcsSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ACS";
+		return "acs";
 	}
 
-	@SentenceField(order = 1, fieldType = "integer")
-	public int sequenceNumber;
+	@SentenceField(order = 1, fieldType = "integer", isRequired = false)
+	public Integer sequenceNumber;
 	
 	@SentenceField(order = 2, fieldType = "integer")
 	public int originatorMMSI;

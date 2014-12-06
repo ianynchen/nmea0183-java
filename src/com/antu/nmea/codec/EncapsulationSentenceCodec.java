@@ -182,7 +182,7 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			if (annotation.isIgnoredInReconstruction())
 				continue;
 			
-			length += annotation.charLength();
+			length += annotation.fieldWidth();
 		}
 		
 		// calculate how many sentences needed
@@ -218,7 +218,7 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 				if (annotation.isIgnoredInReconstruction())
 					continue;
 				
-				length += annotation.charLength();
+				length += annotation.fieldWidth();
 				ISentenceFieldCodec fieldCodec = this.getCodec(annotation, field.getName());
 				
 				if (fieldCodec == null || !fieldCodec.encode(sb, sentence, field)) {

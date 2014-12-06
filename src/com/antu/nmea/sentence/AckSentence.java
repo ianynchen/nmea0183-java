@@ -20,7 +20,7 @@ public class AckSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ACK";
+		return "ack";
 	}
 
 	@SentenceField(order = 1, fieldType = "integer")

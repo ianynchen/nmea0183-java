@@ -20,14 +20,14 @@ public class AbkSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ABK";
+		return "abk";
 	}
 
-	@SentenceField(order = 1, fieldType = "integer")
-	public int mmsi = 0;
+	@SentenceField(order = 1, fieldType = "integer", isRequired = false, fieldWidth = 9)
+	public Integer mmsi = null;
 	
-	@SentenceField(order = 2, fieldType = "char")
-	public char channel = 'A';
+	@SentenceField(order = 2, fieldType = "char", isRequired = false)
+	public Character channel = null;
 	
 	@SentenceField(order = 3, fieldType = "integer")
 	public int messageId;

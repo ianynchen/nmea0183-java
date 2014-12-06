@@ -39,7 +39,7 @@ public class AbmSentence extends AbstractAisSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ABM";
+		return "abm";
 	}
 
 	@SentenceField(order = 1, fieldType = "integer")
@@ -51,14 +51,14 @@ public class AbmSentence extends AbstractAisSentence {
 	@SentenceField(order = 3, fieldType = "integer")
 	public int sequentialMessageId;
 	
-	@SentenceField(order = 4, fieldType = "integer", charLength = 9)
-	public int destinationMMSI;
+	@SentenceField(order = 4, fieldType = "integer", fieldWidth = 9, isRequired = false)
+	public Integer destinationMMSI;
 	
-	@SentenceField(order = 5, fieldType = "integer")
-	public int aisChannelForBroadcast;
+	@SentenceField(order = 5, fieldType = "integer", isRequired = false)
+	public Integer aisChannelForBroadcast;
 	
-	@SentenceField(order = 5, fieldType = "integer")
-	public int messageId;
+	@SentenceField(order = 5, fieldType = "integer", isRequired = false, fieldWidth = 9)
+	public Integer messageId;
 	
 	@SentenceField(order = 6, fieldType = "string", isIgnoredInReconstruction = true)
 	public String encapsulatedData;

@@ -1,7 +1,5 @@
 package test.util;
 
-import static org.junit.Assert.*;
-
 import java.util.BitSet;
 
 import org.junit.Before;

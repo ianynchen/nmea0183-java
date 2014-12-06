@@ -21,7 +21,7 @@ public class AlrSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ALR";
+		return "alr";
 	}
 
 	@SentenceField(order = 1, fieldType = "time")

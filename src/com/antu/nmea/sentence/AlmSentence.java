@@ -20,7 +20,7 @@ public class AlmSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ALM";
+		return "alm";
 	}
 
 	@SentenceField(order = 1, fieldType="integer")

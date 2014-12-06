@@ -21,7 +21,7 @@ public class BecSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "BEC";
+		return "bec";
 	}
 
 	@SentenceField(order = 1, fieldType = "time")

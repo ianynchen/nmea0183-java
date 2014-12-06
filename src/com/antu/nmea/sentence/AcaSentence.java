@@ -21,7 +21,7 @@ public class AcaSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "ACA";
+		return "aca";
 	}
 
 	@SentenceField(order = 1, fieldType = "integer")
@@ -63,9 +63,9 @@ public class AcaSentence extends ParametricSentence {
 	@SentenceField(order = 13, fieldType = "char")
 	public char informationSource;
 	
-	@SentenceField(order = 14, fieldType = "integer")
-	public int inUseFlag;
+	@SentenceField(order = 14, fieldType = "integer", isRequired = false)
+	public Integer inUseFlag;
 	
-	@SentenceField(order = 15, fieldType = "time")
+	@SentenceField(order = 15, fieldType = "time", isRequired = false)
 	public UtcTime timeOfInUseChange;
 }

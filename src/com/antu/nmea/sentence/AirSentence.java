@@ -20,25 +20,25 @@ public class AirSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		return "AIR";
+		return "air";
 	}
 
-	@SentenceField(order = 1, fieldType="integer")
+	@SentenceField(order = 1, fieldType="integer", fieldWidth = 9)
 	public int mmsiOfInterrogatedStation1;
 	
 	@SentenceField(order = 2, fieldType="integer")
 	public int messageRequestedFromStation1;
 	
-	@SentenceField(order = 3, fieldType="integer")
-	public int messageSubSection1ForStation1 = -1;
+	@SentenceField(order = 3, fieldType="integer", isRequired = false)
+	public Integer messageSubSection1ForStation1;
 	
 	@SentenceField(order = 4, fieldType="integer")
 	public int numberOfSecondMessageRequestedFromStation1 = -1;
 	
-	@SentenceField(order = 5, fieldType="integer")
-	public int messageSubSection2ForStation1 = -1;
+	@SentenceField(order = 5, fieldType="integer", isRequired = false)
+	public Integer messageSubSection2ForStation1;
 	
-	@SentenceField(order = 6, fieldType="integer")
+	@SentenceField(order = 6, fieldType="integer", fieldWidth = 9)
 	public int mmsiOfInterrogatedStation2 = -1;
 	
 	@SentenceField(order = 7, fieldType="integer")

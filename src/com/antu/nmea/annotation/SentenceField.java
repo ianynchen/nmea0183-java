@@ -75,14 +75,14 @@ public @interface SentenceField {
 	
 	int precision() default 0;
 	
-	int fieldWidth() default 0;
-	
 	/**
 	 * This is used to form multi and encapsulation sentences to make
-	 * sure each sentence does not exceed the 80 char length limit.
+	 * sure each sentence does not exceed the 80 char length limit. As well
+	 * as for fields that require a specific number of characters, such as 2 chars
+	 * for month, etc.
 	 * @return
 	 */
-	int charLength() default 1;
+	int fieldWidth() default 1;
 
 	/**
 	 * One can use this field to indicate a default value when the field is left empty
