@@ -18,10 +18,10 @@ public class MultiSentenceTable {
 	}
 	
 	public boolean isMultiSentenceType(String sentenceType) {
-		return this.table.containsKey(sentenceType);
+		return this.table.containsKey(sentenceType.toUpperCase());
 	}
 	
 	public void registerType(String sentenceType) {
-		this.table.put(sentenceType, true);
+		this.table.put(sentenceType.toUpperCase(), true);
 	}
 }

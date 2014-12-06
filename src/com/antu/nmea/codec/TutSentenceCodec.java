@@ -40,7 +40,7 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 
 		@Override
 		public String sentenceType() {
-			return "TUT";
+			return "tut";
 		}
 		
 		@SentenceField(order = 1, fieldType="string")
@@ -193,6 +193,7 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 		sentence.textBody = TranslationCodeTable.instance().decode(segment.translationCode, segment.textBody);
 		sentence.isTranslated = sentence.textBody != null;
 		
+		this.setChanged();
 		this.notifyObservers(sentence);
 }
 	
@@ -255,12 +256,11 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 					((TutSentence) sentence).textBody);
 			int segmentLength = isProprietary ? 53 : 56;
 
-			int number = 0;
-			if (!isProprietary) {
-				number = (int) Math.ceil(encoded.length() / 56);
-			} else {
-				number = (int) Math.ceil(encoded.length() / 53);
-			}
+			int number = encoded.length() / segmentLength;
+			int remainder = encoded.length() % segmentLength;
+			
+			if (remainder > 0)
+				number++;
 			if (number > 255)
 				return result;
 			
@@ -269,18 +269,18 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 				for (int i = 0; i < number; i++) {
 					
 					StringBuilder sb = new StringBuilder("$");
-					sb.append(talker).append(sentence.sentenceType());
+					sb.append(talker).append(sentence.sentenceType().toUpperCase());
 					sb.append(",").append(((TutSentence) sentence).sourceIdentifier);
 					sb.append(",");
 					sb.append(StringHelper.fromHex((char) ((number & 0x00F0) >> 4))).append(StringHelper.fromHex((char) (number & 0x000F)));
 					sb.append(",");
-					sb.append(StringHelper.fromHex((char) ((i & 0x00F0) >> 4))).append(StringHelper.fromHex((char) (i & 0x000F)));
+					sb.append(StringHelper.fromHex((char) (((i + 1) & 0x00F0) >> 4))).append(StringHelper.fromHex((char) ((i + 1) & 0x000F)));
 					sb.append(",");
 					sb.append(new Integer(this.nextSentenceId).toString());
 					sb.append(",").append(((TutSentence) sentence).translationCode);
 					sb.append(",");
 					
-					if (i == number - 1) {
+					if (i == number  - 1) {
 						sb.append(encoded.substring(i * segmentLength));
 					} else {
 						sb.append(encoded.substring(i * segmentLength, (i + 1) * segmentLength));
@@ -291,6 +291,9 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 				}
 			}
 		}
+		this.nextSentenceId++;
+		if (this.nextSentenceId > 9)
+			this.nextSentenceId = 0;
 		return result;
 	}
 

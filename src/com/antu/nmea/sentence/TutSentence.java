@@ -20,7 +20,7 @@ public class TutSentence extends NmeaSentence {
 
 	@Override
 	public String sentenceType() {
-		return "TUT";
+		return "tut";
 	}
 
 	@SentenceField(order = 1, fieldType = "string")

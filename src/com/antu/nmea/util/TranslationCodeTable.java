@@ -34,9 +34,9 @@ public final class TranslationCodeTable {
 			return "ISO8859_" + new Integer(encoding).toString();
 		} catch (NumberFormatException e) {
 			
-			if (translationCode == "U") {
+			if (translationCode.equals("U")) {
 				return "UTF-16";
-			} else if (translationCode == "A") {
+			} else if (translationCode .equals("A")) {
 				return "ASCII";
 			} else if (translationCode.startsWith("P")) {
 				String code = translationCode.substring(1);
@@ -63,8 +63,8 @@ public final class TranslationCodeTable {
 			
 			byte[] bytes = new byte[textCode.length() / 2];
 			for (int i = 0; i < bytes.length; i++) {
-				char a = textCode.charAt(i << 1);
-				char b = textCode.charAt(i << 1 + 1);
+				char a = textCode.charAt(i * 2);
+				char b = textCode.charAt(i * 2 + 1);
 				
 				bytes[i] = StringHelper.toByte(a, b);
 			}
