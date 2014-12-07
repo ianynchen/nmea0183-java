@@ -3,24 +3,11 @@ package com.antu.nmea.sentence.ais;
 import com.antu.nmea.annotation.MessageField;
 import com.antu.util.PrintableList;
 
-public class AisMessage1 implements IEncapsulatedAisMessage {
+public class AisMessage1 extends AbstractAisMessage {
 
 	public AisMessage1() {
+		this.messageId = 1;
 	}
-
-	@Override
-	public int messageType() {
-		return this.messageId;
-	}
-
-	@MessageField(order = 1, requiredBits = 6, fieldType = "short")
-	public short messageId = 1;
-	
-	@MessageField(order = 2, requiredBits = 2, fieldType = "short")
-	public short repeatIndicator;
-	
-	@MessageField(order = 3, requiredBits = 30, fieldType = "integer")
-	public int mmsi;
 	
 	@MessageField(order = 4, requiredBits = 4, fieldType = "short")
 	public short navigationalStatus;

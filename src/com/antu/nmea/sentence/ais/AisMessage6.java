@@ -1,14 +1,9 @@
 package com.antu.nmea.sentence.ais;
 
-public class AisMessage6 implements IEncapsulatedAisMessage {
+public class AisMessage6 extends AbstractAisMessage {
 
 	public AisMessage6() {
-		super();
-	}
-
-	@Override
-	public int messageType() {
-		return 6;
+		this.messageId = 6;
 	}
 
 }
