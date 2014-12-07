@@ -5,8 +5,8 @@ public class Dimension {
 	public Dimension() {
 	}
 
-	public int a;
-	public int b;
-	public int c;
-	public int d;
+	public short a;
+	public short b;
+	public short c;
+	public short d;
 }

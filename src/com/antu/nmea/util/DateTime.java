@@ -5,8 +5,8 @@ public class DateTime {
 	public DateTime() {
 	}
 
-	public int month;
-	public int day;
-	public int hour;
-	public int minute;
+	public short month;
+	public short day;
+	public short hour;
+	public short minute;
 }
