@@ -20,7 +20,6 @@ public class BodSentence extends ParametricSentence {
 
 	@Override
 	public String sentenceType() {
-		// TODO Auto-generated method stub
 		return "bod";
 	}
 

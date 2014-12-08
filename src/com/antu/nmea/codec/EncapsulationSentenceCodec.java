@@ -85,12 +85,46 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 	abstract protected IEncapsulatedSentence createEncapsulatedSentence(EncapsulationSentence sentence) 
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 	
+	/**
+	 * group item must be the last
+	 * @param embedded
+	 * @return
+	 * @throws InstantiationException
+	 */
+	protected int isGroupItemCorrect(IEncapsulatedSentence embedded)
+					throws InstantiationException {
+		
+		List<Field> fields = AbstractNmeaSentenceCodec.getMessageFields(embedded);
+		
+		int groupIndex = fields.size();
+		int bits = 0;
+		for (int i = 0; i < fields.size(); i++) {
+			
+			MessageField annotation = fields.get(i).getAnnotation(MessageField.class);
+			if (annotation.isGroup() && i != fields.size() - 1) {
+				
+				throw new InstantiationException("multiple group items: " + embedded.getClass().getName());
+			} else {
+				if (groupIndex < fields.size())
+					bits += annotation.requiredBits();
+			}
+		}
+		return bits;
+	}
+	
 	protected void decodeMessageFields(EncapsulationSentence sentence) 
 			throws MessageFieldCodecNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		
 		IEncapsulatedSentence encapsulatedSentence = this.createEncapsulatedSentence(sentence);
+		
+		try {
+			this.isGroupItemCorrect(encapsulatedSentence);
+		} catch (InstantiationException e) {
+			EncapsulationSentenceCodec.logger.error("multiple group items for: " + encapsulatedSentence.getClass().getName());
+			throw e;
+		}
+		
 		sentence.setEncapsulatedSentence(encapsulatedSentence);
-		//TODO what if its a group?
 		
 		EncapsulationSentenceCodec.logger.info("encapsulated sentence set: " + encapsulatedSentence.getClass().getName());
 		

@@ -33,4 +33,10 @@ public @interface MessageField {
 	boolean isGroup() default false;
 	
 	String defaultValue() default "";
+	
+	/**
+	 * Specifies the full class name of the items in the set
+	 * @return
+	 */
+	String groupItemClass() default "";
 }

@@ -80,7 +80,7 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 		int segments = 0;
 		for (Field field : fields) {
 			GroupItem annotation = field.getAnnotation(GroupItem.class);
-			segments += annotation.requiredFields();
+			segments += annotation.fieldWidth();
 		}
 		
 		return segments;
@@ -104,7 +104,7 @@ public class ListSentenceFieldCodec extends AbstractSentenceFieldCodec
 				AbstractSentenceFieldCodec codec = this.codecFactory.getBySymbol(annotation.itemType());
 				
 				if (codec.decode(segments, groupItem, field, index)) {
-					index += annotation.requiredFields();
+					index += annotation.fieldWidth();
 				} else {
 					ListSentenceFieldCodec.logger.error("unable to decode group item: " + field.getName());
 					return false;

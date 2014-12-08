@@ -9,6 +9,8 @@ public class FieldSetting {
 	private int precision;
 	
 	private String defaultValue;
+	
+	private String groupItemClass;
 
 	public FieldSetting(SentenceField annotation) {
 		
@@ -16,11 +18,13 @@ public class FieldSetting {
 		this.fieldWidth = annotation.fieldWidth();
 		this.precision = annotation.precision();
 		this.defaultValue = annotation.defaultValue();
+		this.groupItemClass = annotation.groupItemClass();
 	}
 
 	public FieldSetting(MessageField annotation) {
 		this.defaultValue = annotation.defaultValue();
 		this.fieldWidth = annotation.requiredBits();
+		this.groupItemClass = annotation.groupItemClass();
 	}
 	
 	public FieldSetting(GroupItem annotation) {
@@ -42,5 +46,9 @@ public class FieldSetting {
 
 	public String getDefaultValue() {
 		return defaultValue;
+	}
+	
+	public String groupItemClass() {
+		return groupItemClass;
 	}
 }
