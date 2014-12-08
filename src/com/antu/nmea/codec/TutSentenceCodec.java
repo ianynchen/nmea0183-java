@@ -18,6 +18,7 @@ import com.antu.nmea.sentence.TutSentence;
 import com.antu.nmea.sentence.field.codec.ISentenceFieldCodec;
 import com.antu.nmea.util.StringHelper;
 import com.antu.nmea.util.TranslationCodeTable;
+import com.antu.util.PrintableList;
 
 public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 	
@@ -244,7 +245,7 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 	@Override
 	public List<String> encode(String talker, INmeaSentence sentence) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new PrintableList<String>();
 		
 		if (talker == null || talker.length() != 2 || sentence == null)
 			return result;
@@ -310,10 +311,12 @@ public class TutSentenceCodec extends AbstractNmeaSentenceCodec {
 		return true;
 	}
 
+	/**
+	 * method is not used.
+	 */
 	@Override
 	protected List<String> doEncode(String talker, INmeaSentence sentence)
 			throws SentenceFieldCodecNotFoundException {
-		// TODO
 		return null;
 	}
 
