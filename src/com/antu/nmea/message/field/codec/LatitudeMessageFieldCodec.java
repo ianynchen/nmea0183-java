@@ -17,21 +17,27 @@ public class LatitudeMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
+		
+		assert(setting.getFieldWidth() == 27);
+		
+		if (bits.size() - startIndex < setting.getFieldWidth())
+			return null;
+
 		Integer val = MessageFieldCodecHelper.parseInteger(bits, startIndex, setting.getFieldWidth(), true);
 		
 		if (val == null)
-			return false;
+			return null;
 
 		try {
 			if (val == 0x3412140)
 				field.set(obj, AbstractAisSentence.LATITUDE_NOT_AVAILABLE);
 			else
 				field.set(obj, val / 600000.0);
-			return true;
+			return setting.getFieldWidth();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
+			return null;
 		}
 	}
 

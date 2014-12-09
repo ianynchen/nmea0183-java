@@ -16,18 +16,22 @@ public class IntegerMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
+		
+		if (bits.size() - startIndex < setting.getFieldWidth())
+			return null;
+
 		Integer value = MessageFieldCodecHelper.parseInteger(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (value == null)
-			return false;
+			return null;
 		
 		try {
 			field.set(obj, value);
-			return true;
+			return setting.getFieldWidth();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
+			return null;
 		}
 	}
 

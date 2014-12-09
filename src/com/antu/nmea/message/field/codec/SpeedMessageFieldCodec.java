@@ -17,12 +17,17 @@ public class SpeedMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
+		
+		assert(setting.getFieldWidth() == 10);
+		if (bits.size() - startIndex < setting.getFieldWidth())
+			return null;
+
 		Short b = MessageFieldCodecHelper.parseShort(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (b == null || b < 0)
-			return false;
+			return null;
 
 		try {
 			if (b == 1023)
@@ -31,9 +36,9 @@ public class SpeedMessageFieldCodec extends AbstractMessageFieldCodec {
 				field.set(obj, AbstractAisSentence.SPEED_EXCEED_LIMIT);
 			else
 				field.set(obj, b / 10.0);
-			return true;
+			return setting.getFieldWidth();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
+			return null;
 		}
 	}
 

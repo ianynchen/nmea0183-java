@@ -22,11 +22,13 @@ public class DateTimeMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 		
-		if (startIndex + setting.getFieldWidth() > bits.size())
-			return false;
+		assert(setting.getFieldWidth() == 20);
+		
+		if (startIndex + 20 > bits.size())
+			return null;
 		
 		DateTime time = new DateTime();
 		
@@ -34,34 +36,34 @@ public class DateTimeMessageFieldCodec extends AbstractMessageFieldCodec {
 		if (value != null) {
 			time.month = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 4, 5, false);
 		if (value != null) {
 			time.day = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 9, 5, false);
 		if (value != null) {
 			time.hour = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 14, 6, false);
 		if (value != null) {
 			time.minute = value;
 		} else
-			return false;
+			return null;
 		
 		try {
 			field.set(obj, time);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			logger.error("unable to set field: " + field.getName(), e);
-			return false;
+			return null;
 		}
 		
-		return true;
+		return 20;
 	}
 
 	@Override

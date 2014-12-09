@@ -72,7 +72,7 @@ public class ListMessageFieldCodec extends AbstractMessageFieldCodec {
 				IMessageFieldCodec codec = this.messageFieldCodecFactory.createBySymbol(annotation.itemType());
 				
 				if (codec != null) {
-					if (!codec.decode(bits, startIndex, groupItem, field)) {
+					if (codec.decode(bits, startIndex, groupItem, field) == null) {
 						logger.error("error decoding group item field: " + field.getName());
 						return false;
 					}
@@ -90,7 +90,7 @@ public class ListMessageFieldCodec extends AbstractMessageFieldCodec {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 		
 		int bitsAfterGroupItem = this.bitsAfterGroupItem(obj, field);
@@ -103,25 +103,25 @@ public class ListMessageFieldCodec extends AbstractMessageFieldCodec {
 			
 			if (bitsAvailable % bitsPerItem != 0) {
 				logger.error("cannot for integral items for group.");
-				return false;
+				return null;
 			}
 			
 			int items = bitsAvailable / bitsPerItem;
 			for (int i = 0; i < items; i++) {
 				
 				if (!decodeItem(bits, startIndex + i * bitsPerItem, groupItem)) {
-					return false;
+					return null;
 				}
 				list.add(groupItem);
 				groupItem = this.groupItemFactory.createByFullName(setting.groupItemClass());
 			}
 			
 			field.set(obj, list);
-			
+			return bitsPerItem * items;
 		} catch (InstantiationException | IllegalAccessException e) {
 			logger.error("exception during decoding", e);
+			return null;
 		}
-		return false;
 	}
 	
 	protected boolean encodeItem(List<Byte> bits, Object item) {

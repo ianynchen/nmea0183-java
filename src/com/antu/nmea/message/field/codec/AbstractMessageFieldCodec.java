@@ -13,7 +13,7 @@ abstract public class AbstractMessageFieldCodec implements IMessageFieldCodec {
 	}
 	
 	@Override
-	public boolean decode(List<Byte> bits, int startIndex, Object obj, Field field) {
+	public Integer decode(List<Byte> bits, int startIndex, Object obj, Field field) {
 		
 		FieldSetting setting = null;
 		
@@ -24,12 +24,12 @@ abstract public class AbstractMessageFieldCodec implements IMessageFieldCodec {
 		}
 		
 		if (setting == null)
-			return false;
+			return null;
 		
 		return this.doDecode(bits, startIndex, obj, field, setting);
 	}
 	
-	abstract protected boolean doDecode(List<Byte> bits, int startIndex, Object obj, Field field, FieldSetting setting);
+	abstract protected Integer doDecode(List<Byte> bits, int startIndex, Object obj, Field field, FieldSetting setting);
 
 	@Override
 	public boolean encode(List<Byte> bits, Object obj, Field field) {

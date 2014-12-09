@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.antu.nmea.annotation.MessageField;
 import com.antu.nmea.annotation.SentenceField;
+import com.antu.nmea.annotation.SentenceMessage;
 import com.antu.nmea.codec.exception.MessageFieldCodecNotFoundException;
 import com.antu.nmea.codec.exception.SentenceFieldCodecNotFoundException;
 import com.antu.nmea.message.field.codec.IMessageFieldCodec;
@@ -82,14 +83,23 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 		}
 	}
 	
+	/**
+	 * Each encapsulation sentence will have bits parsed at this stage, and hence knows how to create
+	 * encapsulated sentences from those bits.
+	 * @param sentence
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
 	abstract protected IEncapsulatedSentence createEncapsulatedSentence(EncapsulationSentence sentence) 
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 	
 	/**
-	 * group item must be the last
-	 * @param embedded
-	 * @return
-	 * @throws InstantiationException
+	 * group item should be unique, although not necessarily the last field in a message
+	 * @param embedded encapsulated sentence that contains the group item
+	 * @return number of bits after the group item.
+	 * @throws InstantiationException thrown if there are multiple group items in a message.
 	 */
 	protected int isGroupItemCorrect(IEncapsulatedSentence embedded)
 					throws InstantiationException {
@@ -101,17 +111,29 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 		for (int i = 0; i < fields.size(); i++) {
 			
 			MessageField annotation = fields.get(i).getAnnotation(MessageField.class);
-			if (annotation.isGroup() && i != fields.size() - 1) {
+			if (annotation.isGroup()) {
 				
-				throw new InstantiationException("multiple group items: " + embedded.getClass().getName());
-			} else {
-				if (groupIndex < fields.size())
-					bits += annotation.requiredBits();
+				if (groupIndex == fields.size()) {
+					groupIndex = i;
+				} else {
+					throw new InstantiationException("multiple group items: " + embedded.getClass().getName());
+				}
+			} else if (groupIndex < fields.size()) {
+				bits += annotation.requiredBits();
 			}
 		}
 		return bits;
 	}
 	
+	/**
+	 * Decodes encapsulated sentence objects from parsed bits.
+	 * 
+	 * @param sentence
+	 * @throws MessageFieldCodecNotFoundException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
 	protected void decodeMessageFields(EncapsulationSentence sentence) 
 			throws MessageFieldCodecNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		
@@ -131,9 +153,10 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 		List<Field> fields = AbstractNmeaSentenceCodec.getMessageFields(encapsulatedSentence);
 		List<Byte> bits = sentence.getRawData();
 		
-		int index = 0;
+		int bitIndex = 0;
 		for (Field field : fields) {
 			MessageField annotation = field.getAnnotation(MessageField.class);
+			Integer size = null;
 			
 			EncapsulationSentenceCodec.logger.info("trying to find message field codec from symbol: " + annotation.fieldType());
 			try {
@@ -143,14 +166,25 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 				EncapsulationSentenceCodec.logger.info("trying to decode field: " + field.getName());
 				if (codec == null) {
 					EncapsulationSentenceCodec.logger.error("message field codec not found: " + annotation.fieldType());
+					return;
 				} else {
-					codec.decode(bits, index, encapsulatedSentence, field);
-					EncapsulationSentenceCodec.logger.info("field: " + field.getName() + "; value: " + field.get(encapsulatedSentence).toString());
+					size = codec.decode(bits, bitIndex, encapsulatedSentence, field);
+					
+					if (size == null) {
+						EncapsulationSentenceCodec.logger.error("unable to decode field: " + field.getName());
+						return;
+					} else {
+						EncapsulationSentenceCodec.logger.info("field: " + field.getName() + "; value: " + field.get(encapsulatedSentence).toString());
+					}
 				}
 			} catch (Exception e) {
 				EncapsulationSentenceCodec.logger.error("error finding codec", e);
+				return;
 			}
-			index += annotation.requiredBits();
+			bitIndex += size;
+			
+			if (bitIndex >= bits.size())
+				break;
 		}
 		
 		this.setChanged();
@@ -292,10 +326,19 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 	}
 	
 
+	/**
+	 * get encapsulated sentence and convert the message fields to bits
+	 */
 	@Override
 	protected boolean preEncodeProcess(INmeaSentence sentence) {
 		
+		assert(sentence != null);
+		assert(sentence instanceof EncapsulationSentence);
+		
 		IEncapsulatedSentence encap = ((EncapsulationSentence)sentence).getEncapsulatedSentence();
+		
+		assert(encap != null);
+		
 		List<Field> messageFields = AbstractNmeaSentenceCodec.getMessageFields(encap);
 		List<Byte> bits = new ArrayList<Byte>();
 		
@@ -323,6 +366,19 @@ abstract public class EncapsulationSentenceCodec extends AbstractNmeaSentenceCod
 			
 			int remainder = bits.size() % 6;
 			int fillBits = (remainder == 0) ? 0 : 6 - remainder;
+			
+			// if a sentence requires all byte to be aligned, set fill bits to 0
+			// and padd the bits.
+			if (encap.getClass().isAnnotationPresent(SentenceMessage.class)) {
+				SentenceMessage annot = encap.getClass().getAnnotation(SentenceMessage.class);
+				
+				if (annot != null && annot.alignBytes()) {
+					for (int i = 0; i < fillBits; i++) {
+						bits.add((byte) 0);
+					}
+					fillBits = 0;
+				}
+			}
 			
 			for (int i = 0; i < fillBits; i++) {
 				bits.add((byte) 0);

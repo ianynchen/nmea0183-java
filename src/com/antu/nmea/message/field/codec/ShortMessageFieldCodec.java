@@ -16,24 +16,24 @@ public class ShortMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 
 		if (bits.size() < startIndex + setting.getFieldWidth())
-			return false;
+			return null;
 		
 		Short value = MessageFieldCodecHelper.parseShort(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (value != null) {
 			try {
 				field.setShort(obj, value);
-				return true;
+				return setting.getFieldWidth();
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				return false;
+				return null;
 			}
 		}
 		
-		return false;
+		return null;
 	}
 
 	@Override

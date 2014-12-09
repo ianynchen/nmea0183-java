@@ -22,8 +22,13 @@ public class DimensionMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
+		
+		assert(setting.getFieldWidth() == 30);
+		
+		if (bits.size() - startIndex < setting.getFieldWidth())
+			return null;
 		
 		Dimension dim = new Dimension();
 		
@@ -31,33 +36,33 @@ public class DimensionMessageFieldCodec extends AbstractMessageFieldCodec {
 		if (value != null) {
 			dim.a = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 9, 9, false);
 		if (value != null) {
 			dim.b = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 18, 6, false);
 		if (value != null) {
 			dim.c = value;
 		} else
-			return false;
+			return null;
 		
 		value = MessageFieldCodecHelper.parseShort(bits, startIndex + 24, 6, false);
 		if (value != null) {
 			dim.d = value;
 		} else
-			return false;
+			return null;
 
 		try {
 			field.set(obj, dim);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			logger.error("unable to set field: " + field.getName(), e);
-			return false;
+			return null;
 		}
-		return true;
+		return 30;
 	}
 
 	@Override

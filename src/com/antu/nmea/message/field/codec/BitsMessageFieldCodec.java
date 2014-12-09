@@ -17,19 +17,21 @@ public class BitsMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 		
 		PrintableList<Byte> result = new PrintableList<Byte>();
-		for (int i = 0; i < setting.getFieldWidth(); i++) {
+		
+		int length = (setting.getFieldWidth() == 0) ? bits.size() - startIndex : setting.getFieldWidth();
+		for (int i = 0; i < length; i++) {
 			result.add(bits.get(i + startIndex));
 		}
 		
 		try {
 			field.set(obj, result);
-			return true;
+			return length;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
+			return null;
 		}
 	}
 

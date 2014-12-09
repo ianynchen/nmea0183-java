@@ -12,7 +12,7 @@ public class Ifm01Codec extends AbstractIfmCodec {
 	}
 
 	@Override
-	public boolean decode(AbstractIfmSegment segment, List<Byte> bits,
+	public Integer decode(AbstractIfmSegment segment, List<Byte> bits,
 			int startIndex) {
 		
 		assert(segment instanceof IfmMessage01);
@@ -21,8 +21,8 @@ public class Ifm01Codec extends AbstractIfmCodec {
 		msg.message = MessageFieldCodecHelper.parseString(bits, startIndex, bits.size() - startIndex, false);
 		
 		if (msg.message == null)
-			return false;
-		return true;
+			return null;
+		return bits.size() - startIndex;
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class IfmMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 		
 		assert(bits.size() >= startIndex + 16);
@@ -48,18 +48,20 @@ public class IfmMessageFieldCodec extends AbstractMessageFieldCodec {
 				
 				if (segment == null || codec == null) {
 					logger.error("unable to create ifm object/codec: " + combined + ", object returned null");
-					return false;
+					return null;
 				}
 				
-				if (codec.decode(segment, bits, startIndex + 16)) {
+				Integer size = codec.decode(segment, bits, startIndex + 16);
+				if (size != null) {
 					
 					field.set(obj, segment);
+					return size;
 				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				logger.error("error in decoding: " + combined, e);
 			}
 		} 
-		return false;
+		return null;
 	}
 
 	@Override

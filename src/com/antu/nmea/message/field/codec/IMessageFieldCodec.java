@@ -7,7 +7,7 @@ public interface IMessageFieldCodec {
 
 	String fieldCodecType();
 	
-	boolean decode(List<Byte> bits, int startIndex, Object obj, Field field);
+	Integer decode(List<Byte> bits, int startIndex, Object obj, Field field);
 	
 	boolean encode(List<Byte> bits, Object obj, Field field);
 }

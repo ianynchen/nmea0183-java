@@ -17,12 +17,18 @@ public class RateOfTurnMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
+		
+		assert(setting.getFieldWidth() == 8);
+		
+		if (bits.size() - startIndex < setting.getFieldWidth())
+			return null;
+
 		Byte b = MessageFieldCodecHelper.parseByte(bits, startIndex, setting.getFieldWidth(), true);
 		
 		if (b == null)
-			return false;
+			return null;
 
 		try {
 			if (b == -128)
@@ -31,9 +37,9 @@ public class RateOfTurnMessageFieldCodec extends AbstractMessageFieldCodec {
 				field.set(obj, AbstractAisSentence.RATE_OF_TURN_EXCEED_LIMIT);
 			else
 				field.set(obj, (b / 4.733) * (b / 4.733));
-			return true;
+			return setting.getFieldWidth();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return false;
+			return null;
 		}
 	}
 

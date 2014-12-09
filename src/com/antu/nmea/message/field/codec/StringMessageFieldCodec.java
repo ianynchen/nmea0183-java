@@ -21,22 +21,30 @@ public class StringMessageFieldCodec extends AbstractMessageFieldCodec {
 	}
 
 	@Override
-	protected boolean doDecode(List<Byte> bits, int startIndex, Object obj,
+	protected Integer doDecode(List<Byte> bits, int startIndex, Object obj,
 			Field field, FieldSetting setting) {
 		
-		String value = MessageFieldCodecHelper.parseString(bits, startIndex, setting.getFieldWidth(), false);
+		int length = setting.getFieldWidth();
+		
+		if (length == 0) {
+			int remainder = bits.size() - startIndex;
+			length = (remainder / 6) * 6;
+		}
+		
+		String value = MessageFieldCodecHelper.parseString(bits, startIndex, length, false);
 		value = MessageFieldCodecHelper.convertReservedChars(value);
 		value = MessageFieldCodecHelper.removeAtSigns(value);
 		
 		if (value != null) {
 			try {
 				field.set(obj, value);
+				return length;
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("unable to set field: " + field.getName(), e);
-				return false;
+				return null;
 			}
 		}
-		return true;
+		return null;
 	}
 
 	@Override
