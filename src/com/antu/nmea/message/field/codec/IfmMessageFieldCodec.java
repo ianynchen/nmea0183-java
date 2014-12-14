@@ -8,7 +8,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.antu.nmea.annotation.FieldSetting;
 import com.antu.nmea.message.field.codec.ifm.AbstractIfmCodec;
+import com.antu.nmea.message.field.codec.ifm.RawIfmCodec;
 import com.antu.nmea.sentence.ais.ifm.AbstractIfmSegment;
+import com.antu.nmea.sentence.ais.ifm.RawIfmSegment;
 import com.antu.util.GenericFactory;
 
 public class IfmMessageFieldCodec extends AbstractMessageFieldCodec {
@@ -48,8 +50,13 @@ public class IfmMessageFieldCodec extends AbstractMessageFieldCodec {
 				
 				if (segment == null || codec == null) {
 					logger.error("unable to create ifm object/codec: " + combined + ", object returned null");
-					return null;
+					
+					codec = new RawIfmCodec();
+					segment = new RawIfmSegment();
 				}
+				
+				segment.dac = dac;
+				segment.functionIdentifier = fi;
 				
 				Integer size = codec.decode(segment, bits, startIndex + 16);
 				if (size != null) {
@@ -79,7 +86,12 @@ public class IfmMessageFieldCodec extends AbstractMessageFieldCodec {
 				
 				if (codec == null) {
 					logger.error("unable to create ifm codec: " + combined + ", object returned null");
-					return false;
+					
+					if (segment instanceof RawIfmSegment) {
+						
+						codec = new RawIfmCodec();
+					} else
+						return false;
 				}
 				
 				if (codec.encode(segment, bits)) {

@@ -61,6 +61,6 @@ public class AisMessage18 extends AbstractAisMessage {
 	@MessageField(order = 20, requiredBits = 1, fieldType = "short")
 	public short communicationStateSelectorFlag;
 	
-	@MessageField(order = 21, requiredBits = 19, fieldType = "short")
+	@MessageField(order = 21, requiredBits = 19, fieldType = "bits")
 	public List<Byte> communicationState;
 }

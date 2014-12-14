@@ -3,6 +3,7 @@ package com.antu.nmea.sentence.ais;
 import java.util.List;
 
 import com.antu.nmea.annotation.MessageField;
+import com.antu.nmea.util.DGNSSData;
 
 public class AisMessage17 extends AbstractAisMessage {
 
@@ -22,6 +23,24 @@ public class AisMessage17 extends AbstractAisMessage {
 	@MessageField(order = 7, requiredBits = 5, fieldType = "short")
 	public short spare2;
 	
-	@MessageField(order = 8, requiredBits = 0, fieldType = "bits")
-	public List<Byte> data;
+	@MessageField(order = 8, requiredBits = 6, fieldType = "short")
+	public Short messageType;
+	
+	@MessageField(order = 9, requiredBits = 10, fieldType = "short")
+	public Short stationId;
+	
+	@MessageField(order = 10, requiredBits = 13, fieldType = "short")
+	public Short zCount;
+	
+	@MessageField(order = 11, requiredBits = 3, fieldType = "short")
+	public Short sequenceNumber;
+	
+	@MessageField(order = 12, requiredBits = 5, fieldType = "short")
+	public Short N;
+	
+	@MessageField(order = 13, requiredBits = 3, fieldType = "short")
+	public Short health;
+	
+	@MessageField(order = 14, fieldType = "list", isGroup = true, groupItemClass = "com.antu.nmea.util.DGNSSData")
+	public List<DGNSSData> dgnssData;
 }

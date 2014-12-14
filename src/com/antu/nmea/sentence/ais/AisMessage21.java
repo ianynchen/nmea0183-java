@@ -1,7 +1,10 @@
 package com.antu.nmea.sentence.ais;
 
+import java.util.List;
+
 import com.antu.nmea.annotation.MessageField;
 import com.antu.nmea.util.Dimension;
+import com.antu.util.PrintableList;
 
 public class AisMessage21 extends AbstractAisMessage {
 
@@ -21,7 +24,7 @@ public class AisMessage21 extends AbstractAisMessage {
 	@MessageField(order = 7, requiredBits = 28, fieldType = "longitude")
 	public double longitude = AbstractAisSentence.LONGITUDE_NOT_AVAILABLE;
 	
-	@MessageField(order = 8, requiredBits = 27, fieldType = "laitutde")
+	@MessageField(order = 8, requiredBits = 27, fieldType = "latitude")
 	public double latitude = AbstractAisSentence.LATITUDE_NOT_AVAILABLE;
 	
 	@MessageField(order = 9, requiredBits = 30, fieldType = "short")
@@ -52,10 +55,10 @@ public class AisMessage21 extends AbstractAisMessage {
 	public short spare;
 	
 	// 0, 6, ... 84
-	@MessageField(order = 18, requiredBits = 0, fieldType = "short")
+	@MessageField(order = 18, requiredBits = 0, fieldType = "string")
 	public String nameOfAidsToNavigationExtension;
 	
 	// 0, 2, 4, 6
-	@MessageField(order = 19, requiredBits = 0, fieldType = "short")
-	public short spare2;
+	@MessageField(order = 19, requiredBits = 0, fieldType = "bits")
+	public List<Byte> spare2 = new PrintableList<Byte>();
 }

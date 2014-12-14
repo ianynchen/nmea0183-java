@@ -20,7 +20,7 @@ public @interface MessageField {
 	 * How many bits this field requires
 	 * @return
 	 */
-	int requiredBits();
+	int requiredBits() default 0;
 	
 	/**
 	 * Type of the field, used to get MessageFieldCodec.

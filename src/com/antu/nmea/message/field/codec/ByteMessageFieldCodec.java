@@ -22,6 +22,11 @@ public class ByteMessageFieldCodec extends AbstractMessageFieldCodec {
 		if (bits.size() - startIndex < setting.getFieldWidth())
 			return null;
 		
+		int length = setting.getFieldWidth();
+		if (length == 0) {
+			length = (bits.size() - startIndex > 8) ? 8 : bits.size() - startIndex;
+		}
+		
 		Byte b = MessageFieldCodecHelper.parseByte(bits, startIndex, setting.getFieldWidth(), false);
 		
 		if (b == null)

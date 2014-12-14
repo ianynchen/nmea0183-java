@@ -41,8 +41,12 @@ public class ShortMessageFieldCodec extends AbstractMessageFieldCodec {
 			FieldSetting setting) {
 		
 		try {
-			if (!MessageFieldCodecHelper.shortToBits(bits, field.getShort(obj), setting.getFieldWidth(), false)) {
-				return false;
+			Short value = field.getShort(obj);
+			
+			if (value != null) {
+				if (!MessageFieldCodecHelper.shortToBits(bits, value, setting.getFieldWidth(), false)) {
+					return false;
+				}
 			}
 			return true;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
